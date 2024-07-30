@@ -1,0 +1,9 @@
+{% block sw_sales_channel_detail_base_general_input_countries %}
+    {% parent %}
+    <div class="sw-sales-channel-detail-city">
+        <label for="city-dropdown">City</label>
+        <select id="city-dropdown" v-model="selectedCity" @change="onChangeCityDropdown($event.target.value)">
+            <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.city }}</option>
+        </select>
+    </div>
+{% endblock %}

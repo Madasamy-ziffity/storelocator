@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Emizen\Core\Content\Storelocator\StorelocatorDefinition"
+                 class="Emizen\Core\Content\Storelocator\StorelocatorDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="Emizen\Subscriber\ProductSubscriber" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Psr\Log\LoggerInterface" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+       <service id="Emizen\Core\System\SalesChannel\Extension\SalesChannelExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+        <service id="Emizen\Controller\StoreLocatorController">
+            <argument type="service" id="router.default"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+        <service id="Emizen\Storefront\Controller\ExampleController" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Psr\Log\LoggerInterface" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+     </services>
+</container>

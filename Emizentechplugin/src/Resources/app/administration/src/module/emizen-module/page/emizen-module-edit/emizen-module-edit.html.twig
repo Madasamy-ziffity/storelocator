@@ -1,0 +1,60 @@
+{%  block emizen_module_edit %}
+    <sw-page class="emizen-module-edit">
+        {% block emizen_module_edit_header %}
+            <template #smart-bar-header>
+                <h2>New Store Locator</h2>
+            </template>
+        {% endblock %}
+        {% block emizen_module_edit_actions %}
+            <template #smart-bar-actions>
+                <sw-button-process
+                        class="store-locator-update__save-action"
+                        :is-loading="isLoading"
+                        :disabled="isLoading"
+                        :process-success="isSaveSuccessful"
+                        variant="primary"
+                        @update:process-success="saveFinish"
+                        @click.prevent="onUpdate"
+                >
+                    {{ $t('emizen-module.general.buttonUpdate') }}
+                </sw-button-process>
+            </template>
+        {% endblock %}
+
+        {% block emizen_module_create_content %}
+
+            <template #content>
+                <sw-card-view>
+                    <sw-card title="Store Locator Form">
+                        <sw-container columns="1fr">
+                            <sw-text-field
+                                    v-model:value="form.city"
+                                    label="City"
+                                    placeholder="Enter city"
+                                    :error="formErrors.city"
+                            >
+
+                            </sw-text-field>
+                            <sw-text-field
+                                    v-model:value="form.lat"
+                                    label="Latitude"
+                                    placeholder="Enter latitude"
+                                    :error="formErrors.lat"
+                            >
+
+                            </sw-text-field>
+                            <sw-text-field
+                                    v-model:value="form.long"
+                                    label="Longitude"
+                                    placeholder="Enter longitude"
+                                    :error="formErrors.long"
+                            >
+
+                            </sw-text-field>
+                        </sw-container>
+                    </sw-card>
+                </sw-card-view>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

@@ -1,0 +1,15 @@
+{
+  "emizen-module":{
+    "general": {
+      "mainMenuItemList": "Emizentech-Modul",
+      "descriptionTextModule": "Emizentech-Modul"
+    },
+
+    "list": {
+      "titleColumn": "Titel",
+      "descColumn": "Beschreibung",
+      "titleSaveSuccess": "Erfolg",
+      "messageSaveSuccess": "Einzelheiten erfolgreich aktualisiert"
+    }
+  }
+}

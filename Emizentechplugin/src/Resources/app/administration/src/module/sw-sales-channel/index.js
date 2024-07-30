@@ -1,0 +1,1 @@
+import './extension/sw-sales-channel-detail-base';

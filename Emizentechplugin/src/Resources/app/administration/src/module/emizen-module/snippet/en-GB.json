@@ -1,0 +1,21 @@
+{
+  "emizen-module":{
+    "general": {
+      "mainMenuItemList": "Store Locator Module",
+      "descriptionTextModule": "Store Locator module`",
+      "addButton": "Add Store Locator",
+      "buttonSave": "Save",
+      "buttonUpdate": "Update",
+      "formTitle": "Store Locator",
+      "cityLabel": "City",
+      "addressLabel": "Address"
+    },
+
+    "list": {
+      "titleColumn": "Title",
+      "descColumn": "Description",
+      "titleSaveSuccess": "Success",
+      "messageSaveSuccess": "Details updated successfully"
+    }
+  }
+}

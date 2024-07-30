@@ -1,0 +1,63 @@
+{% sw_extends '@Storefront/storefront/component/buy-widget/buy-widget.html.twig' %}
+
+{% block buy_widget %}
+    {{ parent() }}
+
+    <div class="product-stock-status">
+        {% if page.product.availableStock > 0 %}
+            <p class="in-stock">In Stock</p>
+        {% else %}
+            <p class="out-of-stock">Out of Stock</p>
+        {% endif %}
+    </div>
+    <div class="check-nearby-stores">
+        <button class="btn btn-primary" id="check-nearby-stores-btn" data-product-id="{{ page.product.parentId }}" data-sales-channel-id="{{ context.salesChannel.id }}">
+            Check Nearby Stores For Availability
+        </button>
+    </div>
+    <div class="stores-with-inventory-container">
+        <ul class="list-unstyled mb-0 stores-with-inventory" id="stores-list">
+
+        </ul>
+    </div>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('check-nearby-stores-btn').addEventListener('click', function() {
+                var productId = this.getAttribute('data-product-id');
+                var salesChannelId = this.getAttribute('data-sales-channel-id');
+                var quantity = 1;
+                var radius = 90;
+
+                fetch('/example?salesChannelId=' + encodeURIComponent(salesChannelId) + '&productId=' + encodeURIComponent(productId))
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response data:', data);
+                        // Handle the response data here
+                        displayStores(data.data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+        function displayStores(stores) {
+            const storesList = document.getElementById('stores-list');
+            storesList.innerHTML = ''; // Clear any existing list items
+
+            stores.forEach(store => {
+                const li = document.createElement('li');
+                li.className = 'store-item';
+
+                li.innerHTML = `
+            <div class="store-details">
+                <span class="store-city">${store.city}</span>
+                <span class="store-distance">${store.distance}</span>
+                <span class="store-stock">Stock: ${store.stock}</span>
+            </div>
+        `;
+
+                storesList.appendChild(li);
+            });
+        }
+    </script>
+{% endblock %}

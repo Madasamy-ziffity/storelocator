@@ -1,0 +1,139 @@
+{% block emizen_module_list %}
+    <sw-page>
+        {% block emizen_module_smart_bar_header %}
+            <template #smart-bar-header>
+                {% block emizen_module_list_smart_bar_header_title %}
+                    <h2>
+                        {% block emizen_module_list_smart_bar_header_title_text %}
+                            {#{{ $tc('sw-settings.index.title') }}#}
+                            <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                            {{ $t('emizen-module.general.mainMenuItemList') }}
+                        {% endblock %}
+                        {% block emizen_module_list_smart_bar_header_amount %}
+                            <span v-if="total" class="sw-page__smart-bar-amount">
+                                ({{total}})
+                            </span>
+                        {% endblock %}
+                    </h2>
+                {% endblock %}
+
+
+            </template>
+        {% endblock %}
+        <template #smart-bar-actions>
+            {% block emizen_module_smart_bar_header_add_button %}
+              <div class="sw-tooltip--wrapper"><a href="#/emizen/module/create" class="emizen-module-list__button-create sw-button sw-button--primary"><span class="sw-button__content">{{ $t('emizen-module.general.addButton') }}</span></a></div>
+            {% endblock %}
+        </template>
+        <template #content>
+            <sw-data-grid
+                    :dataSource="items"
+                    :columns="columns"
+                    :isLoading="isLoading"
+            >
+                <template #actions="{ item }">
+                    <sw-button @click="onEdit(item)">
+                        <sw-icon name="regular-file-edit"></sw-icon>
+                    </sw-button>
+                    <sw-button @click="onDelete(item)">
+                        <sw-icon name="regular-delete-row"></sw-icon>
+                    </sw-button>
+                </template>
+            </sw-data-grid>
+            <!-- Delete confirmation modal -->
+            {#<sw-modal
+                    v-if="showDeleteModal"
+                    title="Confirm Deletion"
+                    @modal-close="showDeleteModal = false"
+            >
+                <template #default>
+                    <p>Are you sure you want to delete this item?</p>
+                </template>
+                <template #footer>
+                    <sw-button variant="primary" @click="confirmDelete">Yes, delete</sw-button>
+                    <sw-button variant="secondary" @click="showDeleteModal = false">Cancel</sw-button>
+                </template>
+            </sw-modal>#}
+            {#<sw-entity-listing
+                    :items="emizenModuleCollection"
+                    :repository="repository"
+                    :showSelection="false"
+                    :columns="columns">
+                <template slot="column-city" slot-scope="{ item }">
+                    {{item.city}}
+                </template>
+                <template slot="column-lat" slot-scope="{ item }">
+                    {{item.lat}}
+                </template>
+                <template slot="column-long" slot-scope="{ item }">
+                    {{item.long}}
+                </template>
+                </sw-entity-listing>#}
+        </template>
+
+        <sw-card title="Store Locator Form">
+            <sw-text-field
+                    v-model:value="form.city"
+                    label="City"
+                    placeholder="Enter city"
+                    :error="formErrors.city"
+                    required
+            />
+            <sw-text-field
+                    v-model:value="form.lat"
+                    label="Latitude"
+                    placeholder="Enter latitude"
+                    :error="formErrors.lat"
+                    required
+            />
+            <sw-text-field
+                    v-model:value="form.long"
+                    label="Longitude"
+                    placeholder="Enter longitude"
+                    :error="formErrors.long"
+                    required
+            />
+            <sw-button @click="onSave">Save</sw-button>
+        </sw-card>
+
+        {#<template #content>
+            {% block emizen_module_list_content %}
+                <div class="emizen-module-list__content">
+                    {% block emizen_module_list_grid %}
+                        <sw-entity-listing>
+                            {% block emizen_module_list_grid_columns %}
+                                {% block sw_product_list_grid_columns_name_preview %}
+                                    <template #preview-firstName="{ item, compact }">
+                                        <sw-avatar
+                                                :size="compact ? '32px' : '48px'"
+                                                :source-context="item"
+                                                :city="item.city"
+                                                :lat="item.lat"
+                                        />
+                                    </template>
+                                {% endblock %}
+
+                            {% block emizen_module_list_grid_columns_name %}
+                                <template #column-city="{ item, compact, isInlineEdit }">
+                                    {% block emizen_module_list_grid_inline_edit_name %}
+                                        <template v-if="isInlineEdit">
+                                            {% block emizen_module_list_grid_inline_edit_city %}
+                                                <sw-text-field
+                                                        v-model:value="item.city"
+                                                        name="sw-field--item-city"
+                                                        class="sw-customer-list__inline-edit-city"
+                                                        :size="compact ? 'small' : 'default'"
+                                                />
+                                            {% endblock %}
+                                        </template>
+                                    {% endblock %}
+                                </template>
+                            {% endblock %}
+                            {% endblock %}
+                        </sw-entity-listing>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </template>#}
+    </sw-page>
+{% endblock %}
