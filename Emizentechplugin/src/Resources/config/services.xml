@@ -8,17 +8,9 @@
                  class="Emizen\Core\Content\Storelocator\StorelocatorDefinition">
             <tag name="shopware.entity.definition" />
         </service>
-        <service id="Emizen\Subscriber\ProductSubscriber" public="true">
-            <argument type="service" id="Doctrine\DBAL\Connection" />
-            <argument type="service" id="Psr\Log\LoggerInterface" />
-            <tag name="kernel.event_subscriber" />
-        </service>
-       <service id="Emizen\Core\System\SalesChannel\Extension\SalesChannelExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-        <service id="Emizen\Controller\StoreLocatorController">
-            <argument type="service" id="router.default"/>
-            <tag name="controller.service_arguments"/>
+        <service id="Emizen\Core\Content\Storeinventorystock\StoreinventorystockDefinition"
+                 class="Emizen\Core\Content\Storeinventorystock\StoreinventorystockDefinition">
+            <tag name="shopware.entity.definition" />
         </service>
         <service id="Emizen\Storefront\Controller\ExampleController" public="true">
             <argument type="service" id="Doctrine\DBAL\Connection" />
@@ -29,6 +21,10 @@
             <call method="setTwig">
                 <argument type="service" id="twig"/>
             </call>
+        </service>
+        <service id="Shopware\Core\Content\Product\ProductDefinition"
+                 class="Shopware\Core\Content\Product\ProductDefinition">
+            <tag name="shopware.entity.definition" />
         </service>
      </services>
 </container>

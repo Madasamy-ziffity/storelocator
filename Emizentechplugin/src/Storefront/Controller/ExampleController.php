@@ -23,55 +23,46 @@ class ExampleController extends StorefrontController
     public function showExample(Request $request): JsonResponse
     {
         //$this->logger->info('testing');
-        $salesChannelId = $request->query->get('salesChannelId');
-        $salesChannelId = hex2bin($salesChannelId);
-        $productId = $request->query->get('productId');
-        $productId = hex2bin($productId);
+        $productNumber = $request->query->get('productId');
 
-        $pre_sql = '
-                SELECT 
-                    st.lat,
-                    st.long
-                FROM 
-                    sales_channel sc
-                LEFT JOIN 
-                    storelocator st ON st.id = sc.storelocator_id
-                WHERE 
-                    sc.id = :salesChannelId
-            ';
-        $result_sc = $this->connection->fetchAssociative($pre_sql, [
-            'salesChannelId' => $salesChannelId
-        ]);
-        //$this->logger->info('current store: ',$result_sc);
-        $currentLat = (float) $result_sc['lat'];
-        $currentLong = (float) $result_sc['long'];
+        $currentLat=(float)'42.530016';
+        $currentLong=(float)'-83.363174';
         try {
             $sql = '
                 SELECT 
-                    HEX(cps.sales_channel_id) as sales_channel_id, 
-                    cps.stock,sl.city,sl.lat,sl.long
+                    cps.stock,cps.city,st.lat,st.long
                 FROM 
-                    custom_product_stock cps 
-                LEFT JOIN 
-                    sales_channel sc ON sc.id = cps.sales_channel_id 
-                LEFT JOIN 
-                    storelocator sl ON sl.id = sc.storelocator_id 
+                    store_inventory_stock cps
+                LEFT JOIN storelocator st on st.city = cps.city
                 WHERE 
-                    cps.product_id = :productId 
+                    cps.product_number = :productNumber
             ';
             $result = $this->connection->fetchAllAssociative($sql, [
-                'productId' => $productId
+                'productNumber' => $productNumber
             ]);
+            //$this->logger->info('result',$result);
+            $filteredResult = [];
             foreach($result as &$val){
                 $lat = (float) $val['lat'];
                 $long = (float) $val['long'];
                 $distance = $this->getDistance($currentLat, $currentLong, $lat, $long, 'M');
-                $val['distance'] = round($distance).' miles away';
+                if ($distance <= 90) {
+                    $val['distance'] = round($distance);
+                    $filteredResult[] = $val;
+                }
             }
             unset($val); // Break the reference with the last element
+            // Sort the filtered result by distance in ascending order
+            usort($filteredResult, function ($a, $b) {
+                return $a['distance'] <=> $b['distance'];
+            });
 
+            // Convert distance back to string format with "miles away"
+            foreach ($filteredResult as &$val) {
+                $val['distance'] = $val['distance'] . ' miles away';
+            }
 
-            return new JsonResponse(['data' => $result]);
+            return new JsonResponse(['data' => $filteredResult]);
         } catch (\Exception $e) {
             $this->logger->error('Query failed: ' . $e->getMessage());
             return new JsonResponse(['error' => 'An error occurred'], 500);
@@ -95,7 +86,6 @@ class ExampleController extends StorefrontController
             } else if ($unit == "N") {
                 return ($miles * 0.8684);
             } else {
-                //$this->logger->info($miles);
                 return $miles;
             }
         }

@@ -1,0 +1,87 @@
+{%  block store_inventory_create %}
+    <sw-page class="store-inventory-create">
+        {% block store_inventory_create_header %}
+            <template #smart-bar-header>
+                <h2>New Store Inventory</h2>
+            </template>
+        {% endblock %}
+        {% block store_inventory_create_actions %}
+            <template #smart-bar-actions>
+                <sw-button-process
+                        class="store-inventory-create__save-action"
+                        :is-loading="isLoading"
+                        :disabled="isLoading"
+                        :process-success="isSaveSuccessful"
+                        variant="primary"
+                        @update:process-success="saveFinish"
+                        @click.prevent="onSave"
+                >
+                    Save
+                </sw-button-process>
+            </template>
+        {% endblock %}
+
+        {% block store_inventory_create_content %}
+
+            <template #content>
+                <sw-card-view>
+                    <sw-card title="Store Inventory Form">
+                        <sw-container columns="1fr">
+                            {#<sw-select-field
+                                    v-model:value="form.product_id"
+                                    label="Product"
+                                    placeholder="Select a product"
+                                    :options="cityOptions"
+                                    :error="formErrors.product_id"
+                                    :searchable="true"
+                            >
+                            </sw-select-field>#}
+
+                            <div class="sw-sales-channel-detail-product">
+                                <label for="product-dropdown">Product</label>
+                                <select id="product-dropdown" v-model="selectedProduct">
+                                    <option v-for="product in products" :key="product.id" :value="product.productNumber">{{ product.productNumber }}</option>
+                                </select>
+                                <span v-if="errors.selectedProduct" class="error-message">{{ errors.selectedProduct }}</span>
+                            </div>
+                            <br>
+                            <div class="sw-sales-channel-detail-city">
+                                <label for="city-dropdown">City</label>
+                                <select id="city-dropdown" v-model="selectedCity">
+                                    <option v-for="city in cities" :key="city.id" :value="city.city">{{ city.city }}</option>
+                                </select>
+                                <span v-if="errors.selectedCity" class="error-message">{{ errors.selectedCity }}</span>
+                            </div>
+                            <br>
+                            <sw-text-field
+                                    v-model:value="form.stock"
+                                    label="Stock"
+                                    placeholder="Enter Stock"
+                                    {#:error="formErrors.stock"#}
+                            >
+
+                            </sw-text-field>
+                            <span v-if="errors.stock" class="error-message">{{ errors.stock }}</span>
+                           {# <sw-text-field
+                                    v-model:value="form.lat"
+                                    label="Latitude"
+                                    placeholder="Enter latitude"
+                                    :error="formErrors.lat"
+                            >
+
+                            </sw-text-field>
+                            <sw-text-field
+                                    v-model:value="form.stock"
+                                    label="Stock"
+                                    placeholder="Enter Stock"
+                                    :error="formErrors.stock"
+                            >
+
+                            </sw-text-field>#}
+                        </sw-container>
+                    </sw-card>
+                </sw-card-view>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

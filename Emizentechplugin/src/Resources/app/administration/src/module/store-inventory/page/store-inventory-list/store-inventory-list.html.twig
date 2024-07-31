@@ -1,0 +1,42 @@
+{% block store_inventory_list %}
+<sw-page>
+    {% block store_inventory_smart_bar_header %}
+        <template #smart-bar-header>
+            {% block store_inventory_list_smart_bar_header_title %}
+                <h2>
+                    {% block store_inventory_list_smart_bar_header_title_text %}
+                        <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                        Store Inventory
+                    {% endblock %}
+                    {% block store_inventory_list_smart_bar_header_amount %}
+                        <span v-if="total" class="sw-page__smart-bar-amount">
+                                ({{total}})
+                            </span>
+                    {% endblock %}
+                </h2>
+            {% endblock %}
+        </template>
+    {% endblock %}
+    <template #smart-bar-actions>
+        {% block store_inventory_smart_bar_header_add_button %}
+            <div class="sw-tooltip--wrapper"><a href="#/store/inventory/create" class="store_inventory-list__button-create sw-button sw-button--primary"><span class="sw-button__content">Add</span></a></div>
+        {% endblock %}
+    </template>
+    <template #content>
+        <sw-data-grid
+                :dataSource="items"
+                :columns="columns"
+                :isLoading="isLoading"
+        >
+            <template #actions="{ item }">
+                <sw-button @click="onEdit(item)">
+                    <sw-icon name="regular-file-edit"></sw-icon>
+                </sw-button>
+                <sw-button @click="onDelete(item)">
+                    <sw-icon name="regular-delete-row"></sw-icon>
+                </sw-button>
+            </template>
+        </sw-data-grid>
+    </template>
+</sw-page>
+{% endblock %}
