@@ -45,9 +45,14 @@
         </div>
     </div>
     </div>
+    <div class="storepagemap">
+        <div id="map" style="height: 500px; width: 100%; margin-top: 10px;"></div>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDu5PPSjaZbrwW-8cfywVq40-nPGJMPVo0&callback=initMap" async defer></script>
     <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                configCity = document.getElementById('configCity').value;
+                var defaultCity = document.getElementById('configCity').value;
+                defaultcityMap(defaultCity);
                 document.getElementById('check-nearby-stores-btn').addEventListener('click', function (event) {
                     event.preventDefault(); // Prevent the form from submitting
                     var city = document.getElementById('city').value;
@@ -66,14 +71,22 @@
                             // Handle the response data here
                             resultsDiv.innerHTML = '';
                             if (data.data.length > 0) {
+                                var configCity = document.getElementById('configCity').value;
                                 data.data.forEach(store => {
                                     var storeDiv = document.createElement('div');
                                     storeDiv.className = 'store-result';
 
-                                    var storeText = document.createElement('span');
-                                    storeText.textContent = store.city;
-                                    storeDiv.appendChild(storeText);
-                                    if(configCity == store.city){
+                                    var anchorTag = document.createElement('a');
+
+                                    // Set attributes for the anchor tag
+                                    var baseUrl = "{{ path('frontend.store.details') }}"; // Ensure this URL doesn't have any query parameters already
+                                    var cityValue = encodeURIComponent(store.city); // Encode the city value to handle spaces and special characters
+                                    var fullUrl = `${baseUrl}?city=${cityValue}`;
+                                    anchorTag.href = fullUrl; // Set the desired URL
+                                    anchorTag.textContent = store.city; // Transfer text content from span
+                                    anchorTag.target = '_blank'; // Optional: open link in a new tab
+                                    storeDiv.appendChild(anchorTag);
+                                    if(configCity === store.city){
                                         var spanElement = document.createElement('span');
                                         spanElement.textContent = 'My Store';
                                         spanElement.className = 'my-store-span';
@@ -85,19 +98,18 @@
                                         storeButton.setAttribute('data-city', store.city);
                                         storeButton.addEventListener('click', function () {
                                             var cityValue = this.getAttribute('data-city');
-                                            setmyStore(cityValue, storeButton);
-                                            //alert('Selected store city: ' + cityValue);
+                                            setmyStore(cityValue, storeButton,'','');
                                         });
                                         storeDiv.appendChild(storeButton);
                                     }
-
-
-
                                     resultsDiv.appendChild(storeDiv);
+                                    //initMap(store.city,store.lat,store.long);
                                 });
+
                             } else {
                                 resultsDiv.textContent = 'No stores found.';
                             }
+                            initMap(data.data);
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -105,7 +117,6 @@
                 });
 
                 var radiusDropdown = document.getElementById('radius');
-                var selectedRadius = radiusDropdown.value;
                 radiusDropdown.addEventListener('change', function () {
                     var radius = this.value;
                     fetch('/radius-stores?radius=' + encodeURIComponent(radius))
@@ -116,14 +127,20 @@
                             resultsDiv.innerHTML = '';
 
                             if (data.data.length > 0) {
-                                data.data.forEach(store => {
+                                data.data.forEach((store, index) => {
                                     var storeDiv = document.createElement('div');
                                     storeDiv.className = 'store-result';
-                                    var storeText = document.createElement('span');
-                                    storeText.textContent = store.city;
+                                    var anchorTag = document.createElement('a');
 
-                                    storeDiv.appendChild(storeText);
-                                    if(configCity == store.city){
+                                    // Set attributes for the anchor tag
+                                    var baseUrl = "{{ path('frontend.store.details') }}"; // Ensure this URL doesn't have any query parameters already
+                                    var cityValue = encodeURIComponent(store.city); // Encode the city value to handle spaces and special characters
+                                    var fullUrl = `${baseUrl}?city=${cityValue}`;
+                                    anchorTag.href = fullUrl; // Set the desired URL
+                                    anchorTag.textContent = store.city; // Transfer text content from span
+                                    anchorTag.target = '_blank'; // Optional: open link in a new tab
+                                    storeDiv.appendChild(anchorTag);
+                                    if (index === 0) {
                                         var spanElement = document.createElement('span');
                                         spanElement.textContent = 'My Store';
                                         spanElement.className = 'my-store-span';
@@ -135,16 +152,17 @@
                                         storeButton.setAttribute('data-city', store.city);
                                         storeButton.addEventListener('click', function () {
                                             var cityValue = this.getAttribute('data-city');
-                                            setmyStore(cityValue, storeButton);
-                                            //alert('Selected store city: ' + cityValue);
+                                            setmyStore(cityValue, storeButton,radiusDropdown,radius);
                                         });
                                         storeDiv.appendChild(storeButton);
                                     }
                                     resultsDiv.appendChild(storeDiv);
+                                    //initMap(store.city,store.lat,store.long);
                                 });
                             } else {
                                 resultsDiv.textContent = 'No stores found.';
                             }
+                            initMap(data.data);
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -153,7 +171,7 @@
                         });
                 });
             });
-            function setmyStore(cityValue,buttonElement){
+            function setmyStore(cityValue,buttonElement,radiusDropdown,radius){
                 fetch('/mystores?city=' + encodeURIComponent(cityValue))
                     .then(response => response.json())
                     .then(data => {
@@ -163,7 +181,12 @@
                             displayAlertMessage('success', 'Store city updated successfully.');
 
                             updateCityDisplay(cityValue,buttonElement);
+                                if(radiusDropdown) {
+                                    radiusDropdown.value = radius;
+                                    var event = new Event('change');
+                                    radiusDropdown.dispatchEvent(event);
 
+                                }
                         } else {
                             displayAlertMessage('danger', 'Failed to update store city: ' + data.message);
                         }
@@ -196,6 +219,38 @@
                 setTimeout(() => {
                     alertContainer.remove();
                 }, 5000);
+            }
+            function initMap(locations) {
+                const map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 5,
+                    center: { lat: 0, lng: 0 },
+                });
+
+                locations.forEach(location => {
+                    const marker = new google.maps.Marker({
+                        position: { lat: parseFloat(location.lat), lng: parseFloat(location.long) },
+                        map: map,
+                        title: location.city
+                    });
+                });
+
+                if (locations.length > 0) {
+                    const bounds = new google.maps.LatLngBounds();
+                    locations.forEach(location => bounds.extend({ lat: parseFloat(location.lat), lng: parseFloat(location.long) }));
+                    map.fitBounds(bounds);
+                }
+            }
+
+            function defaultcityMap(defaultCity){
+                fetch('/find-stores?city=' + encodeURIComponent(defaultCity))
+                    .then(response => response.json())
+                    .then(data => {
+                        initMap(data.data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
             }
     </script>
 {% endblock %}

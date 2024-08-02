@@ -1,0 +1,104 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_content %}
+    <div class="store-details-page">
+        <h1>Store Details Page</h1>
+        <div class="details-container">
+            <input type="hidden" id="storedetails-city" value="{{ city }}">
+            <p>{{ city }}</p>
+            <div class="action-container">
+                {% if city == getStoreCity() %}
+                    <span class="my-details-span">My Store</span>
+                {% else %}
+                    <button class="btn btn-secondary" data-city="{{ city }}" id="my-stores-btn">Set As My Store</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="detailspagemap">
+        <div id="map"></div>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDu5PPSjaZbrwW-8cfywVq40-nPGJMPVo0&callback=initMap" async defer></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var storeButton = document.getElementById('my-stores-btn');
+            if(storeButton){
+            storeButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                var cityValue = this.getAttribute('data-city');
+                setmyStore(cityValue, storeButton);
+            });
+            }
+        });
+        function setmyStore(cityValue,buttonElement){
+            fetch('/mystores?city=' + encodeURIComponent(cityValue))
+                .then(response => response.json())
+                .then(data => {
+                    //console.log('Response data:', data);
+                    if (data.success) {
+                        // Display alert message
+                        displayAlertMessage('success', 'Store city updated successfully.');
+
+                        updateCityDisplay(cityValue,buttonElement);
+
+                    } else {
+                        displayAlertMessage('danger', 'Failed to update store city: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        function updateCityDisplay(cityValue,buttonElement){
+            var cityDisplayElement = document.getElementById('store-city-display');
+            if (cityDisplayElement) {
+                cityDisplayElement.textContent = cityValue;
+            }
+            var spanElement = document.createElement('span');
+            spanElement.textContent = 'My Store';
+            spanElement.className = 'my-store-span';
+
+            // Replace the button element with the span element
+            buttonElement.parentNode.replaceChild(spanElement, buttonElement);
+        }
+        function displayAlertMessage(type, message) {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type}`;
+            alertContainer.textContent = message;
+
+            const formElement = document.querySelector('.store-details-page');
+            formElement.parentNode.insertBefore(alertContainer, formElement);
+
+            setTimeout(() => {
+                alertContainer.remove();
+            }, 5000);
+        }
+        function initMap() {
+            var cityValue = document.getElementById('storedetails-city').value;
+            fetch('/store-locations?city='+ encodeURIComponent(cityValue))
+                .then(response => response.json())
+                .then(locations => {
+                    const map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 5,
+                        center: { lat: 0, lng: 0 },
+                    });
+
+                    locations.forEach(location => {
+                        const marker = new google.maps.Marker({
+                            position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
+                            map: map,
+                            title: location.city
+                        });
+                    });
+
+                    if (locations.length > 0) {
+                        const bounds = new google.maps.LatLngBounds();
+                        locations.forEach(location => bounds.extend({ lat: parseFloat(location.lat), lng: parseFloat(location.lng) }));
+                        map.fitBounds(bounds);
+                    }
+                });
+        }
+    </script>
+
+{% endblock %}

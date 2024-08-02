@@ -3,13 +3,19 @@
 {% block buy_widget %}
     {{ parent() }}
 
-    <div class="product-stock-status">
-        {% if page.product.availableStock > 0 %}
-            <p class="in-stock">In Stock</p>
-        {% else %}
-            <p class="out-of-stock">Out of Stock</p>
-        {% endif %}
-    </div>
+    {% if product.extensions.stockData is defined %}
+        <div class="product-stock-status">
+            {% for stock in product.extensions.stockData %}
+                {% if stock.city == getStoreCity() %}
+                    {% if stock.stock > 0 %}
+                        <p class="in-stock">AVAILABLE</p>
+                    {% else %}
+                        <p class="out-of-stock">NOT AVAILABLE</p>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class="check-nearby-stores">
         <button class="btn btn-primary" id="check-nearby-stores-btn" data-product-id="{{ page.product.productNumber }}">
             Check Nearby Stores For Availability

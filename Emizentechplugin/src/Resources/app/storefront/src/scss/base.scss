@@ -73,3 +73,49 @@
     }
   }
 }
+
+.details-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .city-value {
+    flex: 1;
+    text-align: left;
+  }
+
+  .action-container {
+    flex: 1;
+    text-align: center;
+
+    .my-details-span,
+    .btn-secondary {
+      margin-left: 10px; // Optional: Add some spacing between the elements
+    }
+  }
+}
+.store-details-page {
+  h1 {
+    margin-bottom: 20px; // Adjust the value as needed
+  }
+}
+
+.defaultcity-header {
+  display: flex;
+  flex-direction: column; // Arrange children in a column
+  align-items: flex-start; // Align items to the start (left side)
+  margin-bottom: -21px; // Optional: move the container down
+}
+
+.defaultcity-header span,
+.defaultcity-header a {
+  display: block; // Ensure each element takes up the full width available
+}
+.detailspagemap{
+  #map{
+    height: 500px;
+    width: 100%;
+    margin-top: 10px;
+
+  }
+}
