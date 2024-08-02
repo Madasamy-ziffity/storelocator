@@ -8,5 +8,17 @@
     <route id="example" path="example" methods="GET">
         <default key="_controller">Emizen\Storefront\Controller\ExampleController::showExample</default>
     </route>
+    <route id="custom.page" path="custom-page" methods="GET">
+        <default key="_controller">Emizen\Storefront\Controller\CustomPageController::show</default>
+    </route>
+    <route id="find.stores" path="find-stores" methods="GET">
+        <default key="_controller">Emizen\Storefront\Controller\FindStoresController::findStores</default>
+    </route>
+    <route id="radius.stores" path="radius-stores" methods="GET">
+        <default key="_controller">Emizen\Storefront\Controller\ExampleController::radiusStores</default>
+    </route>
+    <route id="mystores" path="mystores" methods="GET">
+        <default key="_controller">Emizen\Storefront\Controller\MystoresController::myStores</default>
+    </route>
 </routes>
 

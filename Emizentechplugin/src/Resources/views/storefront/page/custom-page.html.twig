@@ -1,0 +1,201 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_content %}
+    <div class="custom-page">
+        <h1>Store Locator Page</h1>
+        <p>The Store Locator is designed to help you find the closest store near you is designed to help you find the closest store near you</p>
+        <input type="hidden" id="configCity" value="{{ getStoreCity() }}">
+    <div class="locator-container">
+    <div class="form-container">
+        <form>
+            <div class="form-group">
+                <label for="city">Choose a city:</label>
+                <select name="city" id="city" required>
+                    <option value="">Search by city</option>
+                    {% for city in cities %}
+                        <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="invalid-feedback" id="city-feedback" style="color: red; display: none;">
+                Please choose a city.
+            </div>
+            <br>
+            <div class="check-nearby-stores">
+                <button class="btn btn-primary" id="check-nearby-stores-btn">
+                    Find Stores
+                </button>
+            </div>
+        </form>
+    </div>
+        <div class="results-container">
+            <div class="form-group">
+                <label for="radius">Radius</label>
+                <select name="radius" id="radius">
+                    <option value="">select</option>
+                    <option value="5">5</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                </select>
+            </div>
+            <div id="store-results"></div>
+        </div>
+    </div>
+    </div>
+    <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                configCity = document.getElementById('configCity').value;
+                document.getElementById('check-nearby-stores-btn').addEventListener('click', function (event) {
+                    event.preventDefault(); // Prevent the form from submitting
+                    var city = document.getElementById('city').value;
+                    var resultsDiv = document.getElementById('store-results');
+                    var cityFeedback = document.getElementById('city-feedback');
+                    if (!city) {
+                        cityFeedback.style.display = 'block';
+                        return;
+                    } else {
+                        cityFeedback.style.display = 'none';
+                    }
+                    fetch('/find-stores?city=' + encodeURIComponent(city))
+                        .then(response => response.json())
+                        .then(data => {
+                            //console.log('Response data:', data);
+                            // Handle the response data here
+                            resultsDiv.innerHTML = '';
+                            if (data.data.length > 0) {
+                                data.data.forEach(store => {
+                                    var storeDiv = document.createElement('div');
+                                    storeDiv.className = 'store-result';
+
+                                    var storeText = document.createElement('span');
+                                    storeText.textContent = store.city;
+                                    storeDiv.appendChild(storeText);
+                                    if(configCity == store.city){
+                                        var spanElement = document.createElement('span');
+                                        spanElement.textContent = 'My Store';
+                                        spanElement.className = 'my-store-span';
+                                        storeDiv.appendChild(spanElement);
+                                    }else {
+                                        var storeButton = document.createElement('button');
+                                        storeButton.textContent = 'Set As My Store';
+                                        storeButton.className = 'btn btn-secondary';
+                                        storeButton.setAttribute('data-city', store.city);
+                                        storeButton.addEventListener('click', function () {
+                                            var cityValue = this.getAttribute('data-city');
+                                            setmyStore(cityValue, storeButton);
+                                            //alert('Selected store city: ' + cityValue);
+                                        });
+                                        storeDiv.appendChild(storeButton);
+                                    }
+
+
+
+                                    resultsDiv.appendChild(storeDiv);
+                                });
+                            } else {
+                                resultsDiv.textContent = 'No stores found.';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+                var radiusDropdown = document.getElementById('radius');
+                var selectedRadius = radiusDropdown.value;
+                radiusDropdown.addEventListener('change', function () {
+                    var radius = this.value;
+                    fetch('/radius-stores?radius=' + encodeURIComponent(radius))
+                        .then(response => response.json())
+                        .then(data => {
+                            var resultsDiv = document.getElementById('store-results');
+
+                            resultsDiv.innerHTML = '';
+
+                            if (data.data.length > 0) {
+                                data.data.forEach(store => {
+                                    var storeDiv = document.createElement('div');
+                                    storeDiv.className = 'store-result';
+                                    var storeText = document.createElement('span');
+                                    storeText.textContent = store.city;
+
+                                    storeDiv.appendChild(storeText);
+                                    if(configCity == store.city){
+                                        var spanElement = document.createElement('span');
+                                        spanElement.textContent = 'My Store';
+                                        spanElement.className = 'my-store-span';
+                                        storeDiv.appendChild(spanElement);
+                                    }else {
+                                        var storeButton = document.createElement('button');
+                                        storeButton.textContent = 'Set As My Store';
+                                        storeButton.className = 'btn btn-secondary';
+                                        storeButton.setAttribute('data-city', store.city);
+                                        storeButton.addEventListener('click', function () {
+                                            var cityValue = this.getAttribute('data-city');
+                                            setmyStore(cityValue, storeButton);
+                                            //alert('Selected store city: ' + cityValue);
+                                        });
+                                        storeDiv.appendChild(storeButton);
+                                    }
+                                    resultsDiv.appendChild(storeDiv);
+                                });
+                            } else {
+                                resultsDiv.textContent = 'No stores found.';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            var resultsDiv = document.getElementById('store-results');
+                            resultsDiv.textContent = 'An error occurred. Please try again later.';
+                        });
+                });
+            });
+            function setmyStore(cityValue,buttonElement){
+                fetch('/mystores?city=' + encodeURIComponent(cityValue))
+                    .then(response => response.json())
+                    .then(data => {
+                        //console.log('Response data:', data);
+                        if (data.success) {
+                            // Display alert message
+                            displayAlertMessage('success', 'Store city updated successfully.');
+
+                            updateCityDisplay(cityValue,buttonElement);
+
+                        } else {
+                            displayAlertMessage('danger', 'Failed to update store city: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+            function updateCityDisplay(cityValue,buttonElement){
+                var cityDisplayElement = document.getElementById('store-city-display');
+                if (cityDisplayElement) {
+                    cityDisplayElement.textContent = cityValue;
+                    document.getElementById('configCity').value = cityValue;
+                }
+                var spanElement = document.createElement('span');
+                spanElement.textContent = 'My Store';
+                spanElement.className = 'my-store-span';
+
+                // Replace the button element with the span element
+                buttonElement.parentNode.replaceChild(spanElement, buttonElement);
+            }
+            function displayAlertMessage(type, message) {
+                const alertContainer = document.createElement('div');
+                alertContainer.className = `alert alert-${type}`;
+                alertContainer.textContent = message;
+
+                const formElement = document.querySelector('.custom-page form');
+                formElement.parentNode.insertBefore(alertContainer, formElement);
+
+                setTimeout(() => {
+                    alertContainer.remove();
+                }, 5000);
+            }
+    </script>
+{% endblock %}

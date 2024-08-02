@@ -11,6 +11,13 @@
             <label>Test field with default value</label>
             <defaultValue>test</defaultValue>
         </input-field>
+        <input-field>
+            <name>storeCity</name>
+            <label>Store City</label>
+            <type>text</type>
+            <value></value>
+            <helpText>Enter the city where the store is located.</helpText>
+        </input-field>
     </card>
 
 </config>

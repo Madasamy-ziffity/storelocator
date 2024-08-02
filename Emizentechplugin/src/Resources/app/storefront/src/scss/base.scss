@@ -7,3 +7,69 @@
   color: red;
   font-weight: bold;
 }
+.custom-page {
+  .locator-container {
+    display: flex;
+    justify-content: space-between;
+
+    .form-container {
+      width: 45%;
+      display: flex;
+      flex-direction: column;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+      }
+
+      .check-nearby-stores {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-start;
+      }
+    }
+
+    .results-container {
+      width: 50%;
+      padding-left: 20px;
+
+      .store-result {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        span {
+          margin-right: 10px;
+        }
+
+        .btn {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .invalid-feedback {
+    color: red;
+    margin-top: 5px;
+  }
+}
+.custom-page {
+  .results-container {
+    .store-result {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .btn {
+        margin-left: 10px;
+      }
+    }
+  }
+}

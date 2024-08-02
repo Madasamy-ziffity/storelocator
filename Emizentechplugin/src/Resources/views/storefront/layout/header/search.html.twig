@@ -1,0 +1,5 @@
+{% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
+{% block layout_header_search %}
+    <a href="{{ path('frontend.custom.page') }}" id="store-city-display">{{ getStoreCity() }}</a>
+    {{ parent() }}
+{% endblock %}

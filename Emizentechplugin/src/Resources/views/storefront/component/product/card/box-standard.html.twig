@@ -1,0 +1,29 @@
+{% sw_extends '@Storefront/storefront/component/product/card/box-standard.html.twig' %}
+
+ {% block component_product_box_price %}
+
+{{ parent() }}
+
+     {% if product.extensions.stockData is defined %}
+         <div class="product-stock">
+             {% for stock in product.extensions.stockData %}
+                 {% if stock.city == getStoreCity() %}
+                     {% if stock.stock > 0 %}
+                        <div class="content-asset" data-asset-id="availabilityLabelInStore">
+                            <span class="availability-label is-available">In-Store Only</span>
+                        </div>
+                    {% else %}
+                        <div class="content-asset" data-asset-id="availabilityLabelInStore">
+                            <span class="availability-label is-available">In-Store Only</span>
+                        </div>
+                        <div class="in-stock-nearby-label">
+                            <div class="content-asset" data-asset-id="availabilityInStockNearby">
+                                <span class="availability-label is-available">Not in Selected Store but in Nearby Store(s)</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                 {% endif %}
+             {% endfor %}
+         </div>
+     {% endif %}
+ {% endblock %}
