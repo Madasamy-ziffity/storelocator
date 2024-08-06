@@ -50,7 +50,7 @@ class ExampleController extends StorefrontController
                 $lat = (float) $val['lat'];
                 $long = (float) $val['long'];
                 $distance = round($this->getDistance($currentLat, $currentLong, $lat, $long, 'M'));
-                if ($distance <= 90) {
+                if ($distance <= 90 && $val['stock'] >0) {
                     $val['distance'] = $distance;
                     $filteredResult[] = $val;
                 }
